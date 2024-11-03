@@ -1,0 +1,6 @@
+C:/Users/vladi/Desktop/ОП/laba_sand3/build/CMakeFiles/sandpile.dir
+C:/Users/vladi/Desktop/ОП/laba_sand3/build/CMakeFiles/create_bmp.dir
+C:/Users/vladi/Desktop/ОП/laba_sand3/build/CMakeFiles/parsing.dir
+C:/Users/vladi/Desktop/ОП/laba_sand3/build/CMakeFiles/main.dir
+C:/Users/vladi/Desktop/ОП/laba_sand3/build/CMakeFiles/edit_cache.dir
+C:/Users/vladi/Desktop/ОП/laba_sand3/build/CMakeFiles/rebuild_cache.dir
