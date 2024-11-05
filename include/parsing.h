@@ -1,5 +1,5 @@
-#ifndef LABWORK_3_ELIZABETINKA_PARSING_H
-#define LABWORK_3_ELIZABETINKA_PARSING_H
+#ifndef LABWORK_3_PARSING_H
+#define LABWORK_3_PARSING_H
 
 #include <iostream>
 #include <cstring>
@@ -11,14 +11,16 @@ enum Options {
 };
 
 struct getInfo {
-    char* input;
-    char* output;
-    size_t max_iter;
-    size_t freq;
-    // проверяет, какие введены параметры (True-вводились, False-нет)
-    bool flag[4];
+    char* input;      
+    char* output;     
+    size_t max_iter;  
+    size_t freq;      
+
+    
+    bool flag[4];  
 };
+
 
 void Parsing(int argc, char** argv, getInfo& arguments);
 
-#endif //LABWORK_3_ELIZABETINKA_PARSING_H
+#endif 

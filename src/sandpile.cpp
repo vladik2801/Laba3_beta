@@ -1,140 +1,109 @@
 #include "../include/sandpile.h"
-#include "../include/deq.h"  // Подключаем вашу реализацию Deque
+#include "../include/create_bmp.h"
+#include <limits>
 #include <cstdint>
 #include <iostream>
 #include <fstream>
+#include <utility>
+#include <string>
+#include <set>
+#include <sstream>
+#include <algorithm>
 
-Sandpile ReadingInput(const char* path, Deque<Deque<uint64_t>>& basic) {
-    Sandpile sandpile;
-    sandpile.count_iter = 0;
+Sandpile::Sandpile() : grid(nullptr), width(0), height(0), minX(0), minY(0), maxX(0), maxY(0) {}
+
+Sandpile::~Sandpile() {
+    if (grid) {
+        for (int i = 0; i < height; ++i) {
+            delete[] grid[i];
+        }
+        delete[] grid;
+    }
+}
+
+void Sandpile::initialize(const char* filename) {
+    std::ifstream inputFile(filename);
+    if (!inputFile.is_open()) {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return;
+    }
     
-    int16_t x = 0;
-    int16_t y = 0;
-    uint64_t pixels;
-    std::ifstream infile(path);
-    std::string line;
+    int x, y;
+    uint64_t sand;
+    minX = minY = std::numeric_limits<int>::max();
+    maxX = maxY = std::numeric_limits<int>::min();
 
-    while (std::getline(infile, line)) {
-        sscanf(line.c_str(), "%d\t%d\t%lu", &x, &y, &pixels);
-        while (x >= sandpile.grid.size()) {
-            Deque<uint64_t> newRow;
-            for (int i = 0; i < sandpile.grid.front().size(); ++i) {
-                newRow.push_back(0);
-            }
-            sandpile.grid.push_back(newRow);
-        }
-        while (y >= sandpile.grid.front().size()) {
-            for (size_t i = 0; i < sandpile.grid.size(); ++i) {
-                Deque<uint64_t>& row = sandpile.grid[i];
-                row.push_back(0);
-            }
-        }
-
-        // Добавление песчинок
-         sandpile.grid[x][y] += pixels;
+    while (inputFile >> x >> y >> sand) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
     }
-     sandpile.width = sandpile.grid.size();
-     if (sandpile.grid.head) {
-        sandpile.height = sandpile.grid.head->data.size();
-    } else {
-        sandpile.height = 0;
+    inputFile.close();
+
+    width = maxX - minX + 1;
+    height = maxY - minY + 1;
+
+    
+    grid = new uint64_t*[height];
+    for (int i = 0; i < height; ++i) {
+        grid[i] = new uint64_t[width]{0};
     }
-    return sandpile;
 
-}
-
-
-void AddPlace(Deque<Deque<uint64_t>>& basic, Sandpile& sandpile, KeysOfAdd key) {
-    Deque<uint64_t> newRow;  // Создаем новую строку или колонку
-    newRow.push_back(0);
-
-    switch (key) {
-        case up:
-            basic.push_front(newRow);
-            sandpile.width++;  // Увеличиваем ширину
-            break;
-        case down:
-            basic.push_back(newRow);
-            sandpile.width++;  // Увеличиваем ширину
-            break;
-        case left:
-            for (uint16_t i = 0; i < sandpile.width; i++) {
-                basic[i].push_front(0);
-            }
-            sandpile.height++;  // Увеличиваем высоту
-            break;
-        case right:
-            for (uint16_t i = 0; i < sandpile.width; i++) {
-                basic[i].push_back(0);
-            }
-            sandpile.height++;  // Увеличиваем высоту
-            break;
+    
+    inputFile.open(filename);
+    while (inputFile >> x >> y >> sand) {
+        grid[y - minY][x - minX] = sand;
+    }
+    std::cout << "Grid after initialization:\n";
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            std::cout << grid[i][j] << " ";
+        }
+        std::cout << "\n";
     }
 }
 
-void Iteration(Deque<Deque<uint64_t>>& basic, Sandpile& sandpile, int& count_cells_more4) {
-    Deque<std::pair<uint16_t, uint16_t>> ignoring; // Дек для игнорируемых координат
-    std::pair<uint16_t, uint16_t> temporary;
+bool Sandpile::update() {
+    bool stable = true;
+    topple();
+    return stable;
+}
 
-    for (uint16_t i = 0; i < sandpile.width; i++) {
-        for (uint16_t j = 0; j < sandpile.height; j++) {
-            temporary = std::make_pair(i, j);
-
-            // Проверка, есть ли координаты в деке игнорируемых
-            bool is_ignored = false;
-            for (size_t k = 0; k < ignoring.size(); ++k) {
-                if (ignoring[k] == temporary) {
-                    is_ignored = true;
-                    break;
-                }
-            }
-            if (is_ignored) {
-                continue;
-            }
-
-            if (basic[i].front() >= 4) {
-                if (i == 0) {
-                    AddPlace(basic, sandpile, up);
-                    i++;  // Увеличиваем индекс, чтобы не зациклиться
-                }
-                if (j == 0) {
-                    AddPlace(basic, sandpile, left);
-                    j++;  // Увеличиваем индекс, чтобы не зациклиться
-                }
-                if (i == sandpile.width - 1) {
-                    AddPlace(basic, sandpile, down);
-                }
-                if (j == sandpile.height - 1) {
-                    AddPlace(basic, sandpile, right);
-                }
-
-                // Обновляем значения в деке
-                basic[i].front() -= 4;
-                if (i > 0) basic[i - 1].push_back(1);
-                if (i < sandpile.width - 1) basic[i + 1].push_back(1);
-                basic[i].push_back(1);
-
-                // Проверяем соседние ячейки
-                if (i < sandpile.width - 1 && basic[i + 1].front() == 4) {
-                    temporary = std::make_pair(i + 1, j);
-                    ignoring.push_back(temporary);
-                    count_cells_more4++;
-                }
-                if (j < sandpile.height - 1 && basic[i][j + 1] == 4) {
-                    temporary = std::make_pair(i, j + 1);
-                    ignoring.push_back(temporary);
-                    count_cells_more4++;
-                }
-                if (basic[i].front() < 4) {
-                    count_cells_more4--;
-                }
-                if (i > 0 && basic[i - 1].front() == 4) {
-                    count_cells_more4++;
-                }
-                if (j > 0 && basic[i][j - 1] == 4) {
-                    count_cells_more4++;
-                }
+void Sandpile::topple() {
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            while (grid[y][x] > 3) {
+                grid[y][x] -= 4;
+                if (y > 0) grid[y - 1][x]++;
+                if (y < height - 1) grid[y + 1][x]++;
+                if (x > 0) grid[y][x - 1]++;
+                if (x < width - 1) grid[y][x + 1]++;
             }
         }
     }
+    std::cout << "Grid after toppling:\n";
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            std::cout << grid[i][j] << " ";
+        }
+        std::cout << "\n";
+    }
+}
+
+void Sandpile::saveToBMP(const char* filename) const {
+    uint8_t** tempGrid = new uint8_t*[height];
+    for (int i = 0; i < height; ++i) {
+        tempGrid[i] = new uint8_t[width];
+        for (int j = 0; j < width; ++j) {
+            tempGrid[i][j] = (grid[i][j] > 3) ? 3 : static_cast<uint8_t>(grid[i][j]);
+        }
+    }
+
+    saveBMP(filename, tempGrid, width, height);
+
+    for (int i = 0; i < height; ++i) {
+        delete[] tempGrid[i];
+    }
+    delete[] tempGrid;
 }

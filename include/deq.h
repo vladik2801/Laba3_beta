@@ -20,6 +20,14 @@ struct Deque {
     size_t count;
 
     Deque() : head(nullptr), tail(nullptr), count(0) {}
+
+    
+    Deque(size_t size, const T& value = T()) : head(nullptr), tail(nullptr), count(0) {
+        for (size_t i = 0; i < size; ++i) {
+            push_back(value); 
+        }
+    }
+
     ~Deque() {
         while (!empty()) {
             pop_front();
@@ -52,11 +60,12 @@ struct Deque {
 
     void pop_back() {
         if (empty()) throw std::out_of_range("Deque is empty");
+        
+        DequeNode<T>* temp = tail;
         if (head == tail) {
             delete head;
             head = tail = nullptr;
         } else {
-            DequeNode<T>* temp = tail;
             tail = tail->prev;
             delete temp;
             tail->next = nullptr;
@@ -66,14 +75,17 @@ struct Deque {
 
     void pop_front() {
         if (empty()) throw std::out_of_range("Deque is empty");
+        
+        DequeNode<T>* temp = head;
         if (head == tail) {
             delete head;
             head = tail = nullptr;
         } else {
-            DequeNode<T>* temp = head;
             head = head->next;
             delete temp;
-            head->prev = nullptr;
+            if (head) {
+                head->prev = nullptr;
+            }
         }
         count--;
     }
@@ -95,6 +107,7 @@ struct Deque {
     bool empty() const {
         return count == 0;
     }
+
     T& operator[](size_t index) {
         if (index >= count) throw std::out_of_range("Index out of range");
 
@@ -116,4 +129,4 @@ struct Deque {
     }
 };
 
-#endif // DEQUE_H
+#endif 

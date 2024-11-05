@@ -4,7 +4,7 @@ project(labwork_3_sorokin)
 set(CMAKE_CXX_STANDARD 17)
 
 # Указываем директорию с заголовочными файлами
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Создаем библиотеку для работы с песчаными ямами

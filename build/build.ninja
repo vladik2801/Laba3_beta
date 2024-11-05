@@ -47,7 +47,7 @@ build cmake_object_order_depends_target_sandpile: phony || .
 build CMakeFiles/sandpile.dir/src/sandpile.cpp.obj: CXX_COMPILER__sandpile_unscanned_ C$:/Users/vladi/Desktop/ОП/laba_sand3/src/sandpile.cpp || cmake_object_order_depends_target_sandpile
   DEP_FILE = CMakeFiles\sandpile.dir\src\sandpile.cpp.obj.d
   FLAGS = -std=gnu++17
-  INCLUDES = -IC:/Users/vladi/Desktop/ОП/laba_sand3/Include -IC:/Users/vladi/Desktop/ОП/laba_sand3/src
+  INCLUDES = -IC:/Users/vladi/Desktop/ОП/laba_sand3/include -IC:/Users/vladi/Desktop/ОП/laba_sand3/src
   OBJECT_DIR = CMakeFiles\sandpile.dir
   OBJECT_FILE_DIR = CMakeFiles\sandpile.dir\src
   TARGET_COMPILE_PDB = CMakeFiles\sandpile.dir\sandpile.pdb
@@ -81,7 +81,7 @@ build cmake_object_order_depends_target_create_bmp: phony || .
 build CMakeFiles/create_bmp.dir/src/create_bmp.cpp.obj: CXX_COMPILER__create_bmp_unscanned_ C$:/Users/vladi/Desktop/ОП/laba_sand3/src/create_bmp.cpp || cmake_object_order_depends_target_create_bmp
   DEP_FILE = CMakeFiles\create_bmp.dir\src\create_bmp.cpp.obj.d
   FLAGS = -std=gnu++17
-  INCLUDES = -IC:/Users/vladi/Desktop/ОП/laba_sand3/Include -IC:/Users/vladi/Desktop/ОП/laba_sand3/src
+  INCLUDES = -IC:/Users/vladi/Desktop/ОП/laba_sand3/include -IC:/Users/vladi/Desktop/ОП/laba_sand3/src
   OBJECT_DIR = CMakeFiles\create_bmp.dir
   OBJECT_FILE_DIR = CMakeFiles\create_bmp.dir\src
   TARGET_COMPILE_PDB = CMakeFiles\create_bmp.dir\create_bmp.pdb
@@ -115,7 +115,7 @@ build cmake_object_order_depends_target_parsing: phony || .
 build CMakeFiles/parsing.dir/src/parsing.cpp.obj: CXX_COMPILER__parsing_unscanned_ C$:/Users/vladi/Desktop/ОП/laba_sand3/src/parsing.cpp || cmake_object_order_depends_target_parsing
   DEP_FILE = CMakeFiles\parsing.dir\src\parsing.cpp.obj.d
   FLAGS = -std=gnu++17
-  INCLUDES = -IC:/Users/vladi/Desktop/ОП/laba_sand3/Include -IC:/Users/vladi/Desktop/ОП/laba_sand3/src
+  INCLUDES = -IC:/Users/vladi/Desktop/ОП/laba_sand3/include -IC:/Users/vladi/Desktop/ОП/laba_sand3/src
   OBJECT_DIR = CMakeFiles\parsing.dir
   OBJECT_FILE_DIR = CMakeFiles\parsing.dir\src
   TARGET_COMPILE_PDB = CMakeFiles\parsing.dir\parsing.pdb
@@ -149,7 +149,7 @@ build cmake_object_order_depends_target_main: phony || cmake_object_order_depend
 build CMakeFiles/main.dir/src/main.cpp.obj: CXX_COMPILER__main_unscanned_ C$:/Users/vladi/Desktop/ОП/laba_sand3/src/main.cpp || cmake_object_order_depends_target_main
   DEP_FILE = CMakeFiles\main.dir\src\main.cpp.obj.d
   FLAGS = -std=gnu++17
-  INCLUDES = -IC:/Users/vladi/Desktop/ОП/laba_sand3/Include -IC:/Users/vladi/Desktop/ОП/laba_sand3/src
+  INCLUDES = -IC:/Users/vladi/Desktop/ОП/laba_sand3/include -IC:/Users/vladi/Desktop/ОП/laba_sand3/src
   OBJECT_DIR = CMakeFiles\main.dir
   OBJECT_FILE_DIR = CMakeFiles\main.dir\src
   TARGET_COMPILE_PDB = CMakeFiles\main.dir\

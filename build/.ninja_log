@@ -1,2 +1,9 @@
 # ninja log v6
-154	623	7523411196868565	CMakeFiles/parsing.dir/src/parsing.cpp.obj	6938440797b8a2bc
+57	946	7525325320360497	CMakeFiles/create_bmp.dir/src/create_bmp.cpp.obj	56cd79cbc2f4a97f
+70	1083	7525325320475222	CMakeFiles/parsing.dir/src/parsing.cpp.obj	78d3f268195c69ed
+21	1126	7525325319990509	CMakeFiles/sandpile.dir/src/sandpile.cpp.obj	829a562c100ee43f
+86	1152	7525325320651351	CMakeFiles/main.dir/src/main.cpp.obj	66acb80ffbaa380d
+1127	1334	7525325331104258	libsandpile.a	f1d13e5b23f4fce
+1086	1341	7525325330635397	libparsing.a	908ac289b5366702
+970	1344	7525325329488919	libcreate_bmp.a	9a1656b6ee2ccf4f
+1344	1587	7525325333220653	main.exe	53c4f5a4c64f9607

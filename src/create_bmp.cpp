@@ -1,123 +1,62 @@
 #include "../include/create_bmp.h"
-#include "../include/parsing.h"
+#include "../include/deq.h" 
+#include "../include/sandpile.h" 
 #include <cstdint>
 #include <fstream>
 #include <iostream>
-#include "../include/deq.h" 
+#include <string>  
 
-std::string GetPath(const char* path) {
-    static int count_picture = 0;
-    count_picture++;
-    return static_cast<std::string>(path) + "/my_bmp" + std::to_string(count_picture) + ".bmp";
-}
-
-void ToNumbers4(int32_t x, uint8_t numbers_4[]) {
-    numbers_4[3] = static_cast<uint8_t>(x / (256 * 256 * 256));
-    x = x % (256 * 256 * 256);
-    numbers_4[2] = static_cast<uint8_t>(x / (256 * 256));
-    x = x % (256 * 256);
-    numbers_4[1] = static_cast<uint8_t>(x / (256));
-    x = x % (256);
-    numbers_4[0] = static_cast<uint8_t>(x);
-}
-
-void CreateBmp(const char* path, Deque<Deque<uint64_t>>& basic, const Sandpile& arguments) { // Изменено на Sandpile
-    std::ofstream fout;
-    fout.open(GetPath(path), std::ios::binary);
-    if (!fout.is_open()) {
-        std::cerr << " Файл не создан";
-        exit(1);
-    }
+void saveBMP(const char* filename, uint8_t** data, int width, int height) {
+    uint32_t fileSize = 54 + width * height;
     
-    uint16_t length = arguments.height; // Используем height вместо length
-    if (length % 8 != 0) {
-        length += 8 - length % 8;
-    }
+    
+    uint8_t header[54] = {
+        0x42, 0x4D,
+        static_cast<uint8_t>(fileSize & 0xFF),
+        static_cast<uint8_t>((fileSize >> 8) & 0xFF),
+        static_cast<uint8_t>((fileSize >> 16) & 0xFF),
+        static_cast<uint8_t>((fileSize >> 24) & 0xFF),
+        0, 0, 0, 0,
+        54, 0, 0, 0,
+        40, 0, 0, 0,
+        static_cast<uint8_t>(width & 0xFF),
+        static_cast<uint8_t>((width >> 8) & 0xFF),
+        0, 0,
+        static_cast<uint8_t>(height & 0xFF),
+        static_cast<uint8_t>((height >> 8) & 0xFF),
+        0, 0,
+        1, 0, 8, 0,  
+        0, 0, 0, 0,
+        static_cast<uint8_t>(width * height & 0xFF),
+        static_cast<uint8_t>((width * height >> 8) & 0xFF),
+        static_cast<uint8_t>((width * height >> 16) & 0xFF),
+        static_cast<uint8_t>((width * height >> 24) & 0xFF),
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0
+    };
 
-    uint8_t numbers_4[4];
-    uint8_t numbers_2[2];
-    int32_t number_4_sigh;
+    
+    uint8_t palette[1024] = {};
+   
+    palette[0] = 255;   palette[1] = 255;   palette[2] = 255; 
+    palette[4] = 0;     palette[5] = 255;   palette[6] = 0;   
+    palette[8] = 255;   palette[9] = 0;     palette[10] = 255; 
+    palette[12] = 255;  palette[13] = 255;  palette[14] = 0;  
 
-    const int kBitmapFileHeder = 14;
-    const int kBitmapInfo = 40;
-    const int kTableOfColors = 20;
-    const int kbiBitCount = 4;
+    std::ofstream outFile(filename, std::ios::binary);
+    if (outFile.is_open()) {
+        outFile.write(reinterpret_cast<char*>(header), sizeof(header));
+        outFile.write(reinterpret_cast<char*>(palette), sizeof(palette));
 
-    numbers_2[0] = 0x4D;
-    numbers_2[1] = 0x42; // BM
-    fout << numbers_2[1] << numbers_2[0];
-
-    int64_t bfSize = kBitmapFileHeder + kBitmapInfo + kTableOfColors + (length * arguments.width) / 2;
-    ToNumbers4(bfSize, numbers_4);
-    fout << numbers_4[0] << numbers_4[1] << numbers_4[2] << numbers_4[3];
-
-    numbers_2[0] = 0;
-    numbers_2[1] = 0;
-    fout << numbers_2[0] << numbers_2[1];
-    fout << numbers_2[0] << numbers_2[1];
-
-    numbers_4[0] = static_cast<uint8_t>(kBitmapFileHeder + kBitmapInfo + kTableOfColors);
-    numbers_4[1] = 0;
-    numbers_4[2] = 0;
-    numbers_4[3] = 0;
-    fout << numbers_4[0] << numbers_4[1] << numbers_4[2] << numbers_4[3];
-
-    numbers_4[0] = static_cast<uint8_t>(kBitmapInfo);
-    numbers_4[1] = 0;
-    numbers_4[2] = 0;
-    numbers_4[3] = 0;
-    fout << numbers_4[0] << numbers_4[1] << numbers_4[2] << numbers_4[3];
-
-    number_4_sigh = static_cast<int32_t>(arguments.height); // Используем height
-    ToNumbers4(number_4_sigh, numbers_4);
-    fout << numbers_4[0] << numbers_4[1] << numbers_4[2] << numbers_4[3];
-
-    number_4_sigh = static_cast<int32_t>(arguments.width);
-    ToNumbers4(number_4_sigh, numbers_4);
-    fout << numbers_4[0] << numbers_4[1] << numbers_4[2] << numbers_4[3];
-
-    numbers_2[0] = 1;
-    numbers_2[1] = 0;
-    fout << numbers_2[0] << numbers_2[1];
-
-    numbers_2[0] = static_cast<uint8_t>(kbiBitCount);
-    numbers_2[1] = 0;
-    fout << numbers_2[0] << numbers_2[1];
-
-    for (int i = 0; i < 8; ++i) {
-        numbers_4[i] = 0;
-        fout << numbers_4[i];
-    }
-
-    uint8_t col[4] = {255, 255, 255, 0}; // white
-    fout << col[2] << col[1] << col[0] << col[3];
-    col[0] = 0; col[1] = 255; col[2] = 0; // lime
-    fout << col[2] << col[1] << col[0] << col[3];
-    col[0] = 138; col[1] = 43; col[2] = 226; // blue violet
-    fout << col[2] << col[1] << col[0] << col[3];
-    col[0] = 255; col[1] = 255; col[2] = 0; // yellow
-    fout << col[2] << col[1] << col[0] << col[3];
-    col[0] = 0; col[1] = 0; col[2] = 0; // black
-    fout << col[2] << col[1] << col[0] << col[3];
-
-    uint8_t q;
-    uint8_t a, b;
-
-    for (int i = arguments.width - 1; i >= 0; i--) {
-        for (uint16_t j = 0; j < length; j += 2) {
-            if (j >= arguments.height) { // Проверяем по height
-                a = 0;
-                b = 0;
-            } else if (j + 1 >= arguments.height) { // Проверяем по height
-                a = (basic.front()[j] > 4) ? 4 : basic.front()[j];
-                b = 0;
-            } else {
-                a = (basic.front()[j] > 4) ? 4 : basic.front()[j];
-                b = (basic.front()[j + 1] > 4) ? 4 : basic.front()[j + 1];
+        for (int y = height - 1; y >= 0; y--) {
+            for (int x = 0; x < width; x++) {
+                uint8_t colorIndex = (data[y][x] > 3) ? 3 : data[y][x]; 
+                outFile.put(static_cast<char>(colorIndex));
             }
-            q = (a << 4) + b;
-            fout << q;
         }
+        outFile.close();
+    } else {
+        std::cerr << "Unable to open file " << filename << " for writing.\n";
     }
-    fout.close();
 }
